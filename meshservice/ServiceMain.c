@@ -872,41 +872,17 @@ int wmain(int argc, char* wargv[])
 					ILib_WindowsExceptionDebugEx(&winException);
 				}
 			}
-			else
+		else
+		{
+			FreeConsole();
+			RunAsAdmin("-fullinstall", IsAdmin() == TRUE);
+			ExitProcess(0);
+
+			if (0)
 			{
-				if (argc == 2 && strcmp(argv[1], "-lang") == 0)
-				{
-					char *lang = NULL;
-					char selfexe[_MAX_PATH];
-					WCHAR wselfexe[MAX_PATH];
-					GetModuleFileNameW(NULL, wselfexe, sizeof(wselfexe) / 2);
-					ILibWideToUTF8Ex(wselfexe, -1, selfexe, (int)sizeof(selfexe));
-
-
-					void *dialogchain = ILibCreateChain();
-					ILibChain_PartialStart(dialogchain);
-					duk_context *ctx = ILibDuktape_ScriptContainer_InitializeJavaScriptEngineEx(0, 0, dialogchain, NULL, NULL, selfexe, NULL, NULL, dialogchain);
-					if (duk_peval_string(ctx, "require('util-language').current.toUpperCase().split('-').join('_');") == 0)
-					{
-						lang = (char*)duk_safe_to_string(ctx, -1);
-						printf("Current Language: %s\n", lang);
-					}
-
-					Duktape_SafeDestroyHeap(ctx);
-					ILibStopChain(dialogchain);
-					ILibStartChain(dialogchain);
-					argc = 1;
-					skip = 1;
-				}
-				if (argc == 2 && strlen(argv[1]) > 6 && strncmp(argv[1], "-lang=", 6) == 0)
-				{
-					DIALOG_LANG = argv[1] + 1 + ILibString_IndexOf(argv[1], strlen(argv[1]), "=", 1);
-					argc = 1;
-				}
-
-				if (argc != 1)
-				{
-					printf("Mesh Agent available switches:\r\n");
+			if (argc != 1)
+			{
+				printf("Mesh Agent available switches:\r\n");
 					printf("  run               Start as a console agent.\r\n");
 					printf("  connect           Start as a temporary console agent.\r\n");
 					printf("  start             Start the service.\r\n");
@@ -1032,6 +1008,7 @@ int wmain(int argc, char* wargv[])
 					}
 				}
 			}
+			} // end if(0)
 		}
 	}
 
