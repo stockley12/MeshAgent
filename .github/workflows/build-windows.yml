@@ -1,0 +1,32 @@
+name: Build MeshService64 (Windows x64)
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build MeshService x64 Release
+        run: |
+          msbuild meshservice/MeshService-2022.vcxproj /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143 /p:WindowsTargetPlatformVersion=10.0
+
+      - name: Upload MeshService64.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeshService64-nodialog
+          path: x64/Release/MeshService64.exe
+          if-no-files-found: warn
+
+      - name: List output files
+        run: |
+          dir x64\Release\ 2>nul || echo "x64/Release not found"
+          dir meshservice\x64\Release\ 2>nul || echo "meshservice/x64/Release not found"
+        shell: cmd
