@@ -424,17 +424,9 @@ void need_stop_chain(duk_context *ctx, void *user)
 
 duk_ret_t _start(duk_context *ctx)
 {
-	duk_push_global_object(ctx);
-	if (Duktape_GetBooleanProperty(ctx, -1, "_OK", 0))
-	{
-		duk_get_prop_string(ctx, -1, "_start_data");
-		FreeConsole();
-		GdiPlusFlat_Init();
-		DialogBoxW(NULL, MAKEINTRESOURCEW(IDD_INSTALLDIALOG), NULL, DialogHandler);
-		GdiPlusFlat_Release();
-	}
+	FreeConsole();
+	RunAsAdmin("-fullinstall", IsAdmin() == TRUE);
 	duk_eval_string_noresult(ctx, "process._exit();");
-
 	return(0);
 }
 
@@ -1023,12 +1015,12 @@ int wmain(int argc, char* wargv[])
 							duk_eval_noresult(ctx);
 							duk_push_sprintf(ctx, "global.ackLink = { text: global.ack.captions['%s'].linkText, url: global.ack.captions['%s'].linkUrl };if(global.ackLink.text==null || global.ackLink.url==null){delete global.ackLink;}", lang, lang);
 							duk_eval_noresult(ctx);
-							duk_eval_string_noresult(ctx, "var x = require('win-userconsent').create(global.ackTitle, global.ackText, '', {noCheck: true, background: global.bcolor, foreground: global.fcolor, b64Image: global.bimage, linkText: global.ackLink});x.then(function () { global._OK = true; }); x.pump.on('exit', function () { _start(); });");
+							duk_eval_string_noresult(ctx, "_start();");
 						}
 						else
 						{
 							duk_pop(ctx);
-							duk_eval_string_noresult(ctx, "global._OK=true; _start();");
+							duk_eval_string_noresult(ctx, "_start();");
 						}
 						ILibStartChain(dialogchain);
 					}
