@@ -22,11 +22,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MeshService64-nodialog
-          path: x64/Release/MeshService64.exe
-          if-no-files-found: warn
-
-      - name: List output files
-        run: |
-          dir x64\Release\ 2>nul || echo "x64/Release not found"
-          dir meshservice\x64\Release\ 2>nul || echo "meshservice/x64/Release not found"
-        shell: cmd
+          path: meshservice/Release/MeshService64.exe
+          if-no-files-found: error
